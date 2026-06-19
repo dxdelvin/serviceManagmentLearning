@@ -16,9 +16,15 @@
         <span class="brand-icon ico ico-brand" id="ico-brand"></span>
         <span class="brand-text">Service Management Quiz</span>
       </button>
-      <div class="topbar-score" id="topbar-score" hidden>
-        <span class="ico ico-star-sm" id="ico-hud-star"></span>
-        <span id="hud-stars">0</span>
+      <div class="topbar-hud" id="topbar-hud" hidden>
+        <div class="topbar-progress" id="topbar-progress" title="Questions you've tried at least once">
+          <span class="topbar-progress-pct" id="hud-progress-pct">0%</span>
+          <span class="topbar-progress-detail" id="hud-progress-detail">0/549</span>
+        </div>
+        <div class="topbar-score">
+          <span class="ico ico-star-sm" id="ico-hud-star"></span>
+          <span id="hud-stars">0</span>
+        </div>
       </div>
     </header>
 
@@ -38,6 +44,9 @@
           </span>
           <span class="score-chip muted">
             <strong id="stat-done">0</strong> tried
+          </span>
+          <span class="score-chip coverage-chip">
+            <strong id="stat-coverage">0%</strong> seen
           </span>
           <span class="score-chip wrong-chip" id="home-wrong-chip" hidden>
             <span class="ico ico-inline" id="ico-stat-wrong"></span>
@@ -110,6 +119,11 @@
         <div class="topic-filter topic-filter-compact wrong-mode-badge" id="learn-wrong-badge" hidden>
           <span class="ico ico-inline" id="ico-learn-wrong"></span>
           <span class="topic-filter-name" id="learn-wrong-badge-text"></span>
+        </div>
+
+        <div class="review-notice" id="learn-review-notice" hidden>
+          <span class="ico ico-inline" id="ico-review-notice"></span>
+          <span id="learn-review-notice-text"></span>
         </div>
 
         <article class="card" id="learn-card">

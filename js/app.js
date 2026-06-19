@@ -9,6 +9,7 @@ let examIndex = 0;
 let examStartTime = null;
 let examTimerInterval = null;
 let learnMode = 'normal';
+let reviewNoticeTimer = null;
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
@@ -42,6 +43,7 @@ function initStaticIcons() {
     'ico-learn-wrong': 'cross',
     'ico-back-wrong': 'arrowLeft',
     'ico-wrong-empty': 'check',
+    'ico-review-notice': 'badgeCheck',
   };
   for (const [id, name] of Object.entries(map)) {
     setIcon(document.getElementById(id), name);
@@ -78,9 +80,15 @@ function getWrongPool() {
 }
 
 function getFilteredQuestions() {
-  return progress.topicFilter
-    ? questions.filter(q => q.topic === progress.topicFilter)
-    : questions;
+  return getPoolQuestions(questions, progress.topicFilter);
+}
+
+function getCoverageStats() {
+  const pool = getFilteredQuestions();
+  const seen = getSeenCount(progress, questions, progress.topicFilter);
+  const total = pool.length;
+  const pct = getCoveragePercent(progress, questions, progress.topicFilter);
+  return { pool, seen, total, pct };
 }
 
 function getExamPoolSize() {
@@ -93,11 +101,17 @@ function updateTopicDisplay() {
   const examCount = getExamPoolSize();
   const badgeText = filter ? `${filter} only · ${count} questions` : '';
 
+  const { seen, pct } = getCoverageStats();
   const heroSub = $('#hero-sub');
   if (heroSub) {
-    heroSub.textContent = filter
-      ? `${count} questions in this topic · learn or quiz`
-      : `${questions.length} questions · learn at your pace or take a short quiz`;
+    if (filter) {
+      const reviewed = isPoolFullySeen(progress, questions, filter);
+      heroSub.textContent = reviewed
+        ? `${filter} reviewed · ${count} questions · practice again anytime`
+        : `${count} questions in this topic · ${pct}% seen so far`;
+    } else {
+      heroSub.textContent = `${questions.length} questions · ${pct}% seen · learn or quiz`;
+    }
   }
 
   const badges = [
@@ -231,11 +245,7 @@ function bindEvents() {
   $('#btn-learn-shuffle').onclick = shuffleLearn;
   $('#btn-learn-skip').onclick = () => {
     if (!learnQueue.length) return;
-    learnPointer = (learnPointer + 1) % learnQueue.length;
-    if (learnMode === 'wrong') progress.wrongLearnIndex = learnPointer;
-    else progress.learnIndex = learnPointer;
-    saveProgress(progress);
-    renderLearnQuestion();
+    advanceLearnPointer();
   };
   $('#btn-exam-prev').onclick = () => navigateExam(-1);
   $('#btn-exam-next').onclick = () => navigateExam(1);
@@ -252,10 +262,27 @@ function bindEvents() {
 function showScreen(id) {
   $$('.screen').forEach(s => s.classList.remove('active'));
   $(`#${id}`).classList.add('active');
-  $('#topbar-score').hidden = id === 'screen-home';
+  $('#topbar-hud').hidden = id === 'screen-home';
+  if (id !== 'screen-learn') hideLearnReviewNotice();
   updateTopicDisplay();
   updateWrongDisplay();
+  updateCoverageDisplay();
   window.scrollTo(0, 0);
+}
+
+function updateCoverageDisplay() {
+  const { seen, total, pct } = getCoverageStats();
+  const pctEl = $('#hud-progress-pct');
+  const detailEl = $('#hud-progress-detail');
+  const statCoverage = $('#stat-coverage');
+
+  if (pctEl) pctEl.textContent = `${pct}%`;
+  if (detailEl) {
+    detailEl.textContent = progress.topicFilter
+      ? `${seen}/${total} topic`
+      : `${seen}/${total}`;
+  }
+  if (statCoverage) statCoverage.textContent = `${pct}%`;
 }
 
 function updateStars() {
@@ -264,6 +291,41 @@ function updateStars() {
   $('#hud-stars').textContent = stars;
   $('#stat-stars').textContent = stars;
   $('#stat-done').textContent = done;
+  updateCoverageDisplay();
+}
+
+function hideLearnReviewNotice() {
+  const notice = $('#learn-review-notice');
+  if (notice) notice.hidden = true;
+  if (reviewNoticeTimer) {
+    clearTimeout(reviewNoticeTimer);
+    reviewNoticeTimer = null;
+  }
+}
+
+function showLearnReviewNotice() {
+  if (learnMode !== 'normal') return;
+
+  const notice = $('#learn-review-notice');
+  const textEl = $('#learn-review-notice-text');
+  if (!notice || !textEl) return;
+
+  const label = progress.topicFilter
+    ? `"${progress.topicFilter}" reviewed`
+    : 'All questions reviewed';
+
+  textEl.textContent = `${label} — starting from the beginning again!`;
+  notice.hidden = false;
+
+  if (reviewNoticeTimer) clearTimeout(reviewNoticeTimer);
+  reviewNoticeTimer = setTimeout(() => {
+    notice.hidden = true;
+    reviewNoticeTimer = null;
+  }, 5000);
+
+  showToast(progress.topicFilter
+    ? `${progress.topicFilter} reviewed!`
+    : 'Full set reviewed!');
 }
 
 /* ─── LEARN ─── */
@@ -294,8 +356,16 @@ function renderLearnQuestion() {
   const q = learnQueue[learnPointer];
   if (!q) return;
 
-  $('#learn-progress-text').textContent = `${learnPointer + 1} / ${learnQueue.length}`;
-  $('#learn-qnum').textContent = `Question ${q.id}`;
+  const { seen, total, pct } = getCoverageStats();
+  const passLabel = learnMode === 'wrong'
+    ? `${learnPointer + 1} / ${learnQueue.length}`
+    : `${learnPointer + 1} / ${learnQueue.length} · ${pct}% seen`;
+  $('#learn-progress-text').textContent = passLabel;
+
+  const reviewed = learnMode === 'normal' && isPoolFullySeen(progress, questions, progress.topicFilter);
+  $('#learn-qnum').textContent = reviewed
+    ? `Question ${q.id} · reviewing again`
+    : `Question ${q.id}`;
   $('#learn-question').textContent = q.question;
   $('#learn-feedback').hidden = true;
 
@@ -324,6 +394,7 @@ function handleLearnAnswer(q, selected) {
     else if (letter === selected && !correct) btn.classList.add('wrong');
   });
 
+  const wasFullySeen = learnMode === 'normal' && isPoolFullySeen(progress, questions, progress.topicFilter);
   recordAnswer(progress, q.id, correct, q.topic);
   if (correct) {
     awardXp(progress, 10);
@@ -356,6 +427,25 @@ function handleLearnAnswer(q, selected) {
 
   updateStars();
   updateWrongDisplay();
+  updateCoverageDisplay();
+
+  if (learnMode === 'normal' && !wasFullySeen && isPoolFullySeen(progress, questions, progress.topicFilter)) {
+    const notice = $('#learn-review-notice');
+    const textEl = $('#learn-review-notice-text');
+    if (notice && textEl) {
+      const label = progress.topicFilter ? `"${progress.topicFilter}" complete` : 'All questions seen';
+      textEl.textContent = `${label} — nice! Keep going to review.`;
+      notice.hidden = false;
+      if (reviewNoticeTimer) clearTimeout(reviewNoticeTimer);
+      reviewNoticeTimer = setTimeout(() => {
+        notice.hidden = true;
+        reviewNoticeTimer = null;
+      }, 5000);
+      showToast(progress.topicFilter
+        ? `${progress.topicFilter} — all questions seen!`
+        : 'You\'ve seen every question!');
+    }
+  }
 
   if (learnMode === 'wrong' && correct && !learnQueue.length) {
     showToast('All wrong questions cleared!');
@@ -363,12 +453,16 @@ function handleLearnAnswer(q, selected) {
   }
 }
 
-function nextLearnQuestion() {
-  if (!learnQueue.length) {
-    showScreen('screen-home');
-    return;
-  }
+function advanceLearnPointer() {
+  if (!learnQueue.length) return false;
+
+  const atEnd = learnPointer === learnQueue.length - 1;
   learnPointer = (learnPointer + 1) % learnQueue.length;
+
+  if (learnMode === 'normal' && atEnd && learnPointer === 0) {
+    showLearnReviewNotice();
+  }
+
   if (learnMode === 'wrong') {
     progress.wrongLearnIndex = learnPointer;
   } else {
@@ -376,6 +470,15 @@ function nextLearnQuestion() {
   }
   saveProgress(progress);
   renderLearnQuestion();
+  return true;
+}
+
+function nextLearnQuestion() {
+  if (!learnQueue.length) {
+    showScreen('screen-home');
+    return;
+  }
+  advanceLearnPointer();
 }
 
 function shuffleLearn() {
@@ -553,6 +656,7 @@ function finishExam() {
   checkBadges(progress).forEach(b => showToast(`New sticker: ${b.name}!`));
   updateStars();
   updateWrongDisplay();
+  updateCoverageDisplay();
   showScreen('screen-exam-results');
 }
 
@@ -563,7 +667,10 @@ function renderProgress() {
     progress.totalCorrect >= 50 ? 'faceStar' : 'faceHappy'
   );
   $('#profile-stars').textContent = progress.totalCorrect;
-  $('#profile-done').textContent = `${progress.totalAnswered} questions practiced`;
+  const { seen, total, pct } = getCoverageStats();
+  $('#profile-done').textContent = progress.topicFilter
+    ? `${seen}/${total} seen in this topic (${pct}%)`
+    : `${seen}/${total} questions seen (${pct}%)`;
 
   const grid = $('#badges-grid');
   grid.innerHTML = '';
@@ -640,9 +747,20 @@ function renderTopics() {
   const list = $('#topic-list');
   list.innerHTML = '';
 
+  const allSeen = getSeenCount(progress, questions);
+  const allPct = getCoveragePercent(progress, questions);
+  const allReviewed = isPoolFullySeen(progress, questions);
+
   const allItem = document.createElement('div');
   allItem.className = 'topic-item' + (progress.topicFilter ? '' : ' active');
-  allItem.innerHTML = `<span class="topic-item-name">All topics</span><span class="topic-item-count">${questions.length}</span>`;
+  allItem.innerHTML = `
+    <span class="topic-item-name">All topics</span>
+    <span class="topic-item-meta">
+      <span class="topic-item-pct">${allPct}%</span>
+      ${allReviewed ? '<span class="topic-item-reviewed">Reviewed</span>' : ''}
+      <span class="topic-item-count">${allSeen}/${questions.length}</span>
+    </span>
+  `;
   allItem.onclick = () => {
     progress.topicFilter = null;
     progress.learnIndex = 0;
@@ -655,9 +773,19 @@ function renderTopics() {
   list.appendChild(allItem);
 
   Object.entries(topics).sort((a, b) => b[1] - a[1]).forEach(([name, count]) => {
+    const seen = getSeenCount(progress, questions, name);
+    const pct = getCoveragePercent(progress, questions, name);
+    const reviewed = isTopicReviewed(progress, questions, name);
     const item = document.createElement('div');
     item.className = 'topic-item' + (progress.topicFilter === name ? ' active' : '');
-    item.innerHTML = `<span class="topic-item-name">${name}</span><span class="topic-item-count">${count}</span>`;
+    item.innerHTML = `
+      <span class="topic-item-name">${name}</span>
+      <span class="topic-item-meta">
+        <span class="topic-item-pct">${pct}%</span>
+        ${reviewed ? '<span class="topic-item-reviewed">Reviewed</span>' : ''}
+        <span class="topic-item-count">${seen}/${count}</span>
+      </span>
+    `;
     item.onclick = () => {
       progress.topicFilter = name;
       progress.learnIndex = 0;

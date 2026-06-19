@@ -86,6 +86,35 @@ function getAccuracy(progress) {
   return Math.round((progress.totalCorrect / progress.totalAnswered) * 100);
 }
 
+function getPoolQuestions(questions, topicFilter = null) {
+  return topicFilter
+    ? questions.filter(q => q.topic === topicFilter)
+    : questions;
+}
+
+function getSeenCount(progress, questions, topicFilter = null) {
+  return getPoolQuestions(questions, topicFilter).filter(
+    q => progress.questionStats[q.id]?.attempts > 0
+  ).length;
+}
+
+function getCoveragePercent(progress, questions, topicFilter = null) {
+  const pool = getPoolQuestions(questions, topicFilter);
+  if (!pool.length) return 0;
+  return Math.round((getSeenCount(progress, questions, topicFilter) / pool.length) * 100);
+}
+
+function isPoolFullySeen(progress, questions, topicFilter = null) {
+  const pool = getPoolQuestions(questions, topicFilter);
+  return pool.length > 0 && getSeenCount(progress, questions, topicFilter) === pool.length;
+}
+
+function isTopicReviewed(progress, questions, topicName) {
+  const pool = questions.filter(q => q.topic === topicName);
+  if (!pool.length) return false;
+  return pool.every(q => progress.questionStats[q.id]?.attempts > 0);
+}
+
 function getTopicStats(progress, questions) {
   const topics = {};
   for (const q of questions) {
