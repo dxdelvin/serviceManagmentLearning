@@ -1,0 +1,627 @@
+
+
+============================================================
+PAGE 4
+============================================================
+Axelos (2014)
+‘ITIL Lifecycle Suite´ (5 Bände), The Stationary Office, 2014
+Axelos (2019)
+‘ITIL Foundation ITIL 4 Edition´, Axelos, 2019
+PeopleCert (2019)
+‘ITIL Foundation. The Definite Guide for ITIL Foundation 
+Certification´, iCertify Training, 2019
+Axelos (2020)
+‘ITIL 4 Managing Professional Package´ (4 Bände), The 
+Stationary Office, 2020
+
+============================================================
+PAGE 6
+============================================================
+" Service Management is a set of specialized organizational capabilities for enabling value 
+to customers in the form of services ."
+“Service: A means of enabling value co-creation by facilitating outcomes that customers 
+want to achieve, without the customers having to manage specific costs and risks." 
+“Service offering: A formal description of one or more services, designed to address the 
+needs of a target consumer group. A service offering may include goods, access to 
+resources, and service actions. 
+„Product: A configuration of an organization´s resources designed to offer value for a 
+customer“.
+source: ITIL Foundation ITIL 4 Edition (2019)
+
+============================================================
+PAGE 7
+============================================================
+“Service relationship A cooperation between a service provider and service consumer. 
+Service relationships include service provision, service consumption, and service 
+relationship management." 
+“Service provision: Activities performed by an organization to provide services:
+•
+Management of the provider´s resources, configured to deliver the service
+•
+Ensuring access to these resources for users
+•
+Fulfilment of the agreed service actions
+•
+Service level management and continual improvement
+Service provision may also include the supplying of goods." 
+“Service relationship management: Joint activities performed by a service provider and a 
+service consumer to ensure continual value co-creation based on agreed and available 
+service offerings.” 
+„Service consumption: Activities performed by an organization to consume services:
+•
+Management of consumer´s resources needed to use the service
+•
+Service actions performed by users, including utilizing the provider´s resources, 
+and requesting service actions to be fulfilled
+Service consumption may also include the receiving ( acquiring ) of goods “.
+source : ITIL Foundation ITIL 4 Edition (2019)
+
+============================================================
+PAGE 41
+============================================================
+General Management Practices
+Service Management Practices
+Technical Management Practices
+1. Architecture management
+1. Availability management
+1. Deployment management
+2. Continual improvement
+2. Business analysis
+2. Infrastructure and platform management
+3. Information security management
+3. Capacity and performance management
+3. Software development and management
+4. Knowledge management
+4. Change control
+5. Measurement and reporting
+5. Incident management
+6. Organizational change management
+6. IT asset management
+7. Portfolio management
+7. Monitoring and event management
+8. Project management
+8. Problem management
+9. Relationship management
+9. Release management
+10. Risk management
+10. Service catalogue management
+11. Service financial management
+11. Service configuration management
+12. Strategy management
+12. Service continuity management
+13. Supplier management
+13. Service design
+14. Workforce and talent management
+14. Service desk
+15. Service level management
+16. Service request management
+17. Service validation and testing
+
+============================================================
+PAGE 43
+============================================================
+General Management Practices
+ITIL 4 Practices
+ITIL V3 Processes
+comments
+1. Architecture management
+Introduction to Enterprise Architecture Management in publication Service Strategy
+2. Continual improvement
+The seven-step improvement
+The Continual Improvement Register CRI corresponds to the CSI Register and the Service 
+Improvement Plan (SIP)
+3. Information security 
+management
+Information security 
+management 
+Access management
+Identity and Access Management is part of the ISM practice in ITIL 4
+4. Knowledge management
+knowledge management
+5. Measurement and reporting
+no separate process in V3, but is addressed e.g. in service level management and seven step 
+improvement process
+6. Organizational change 
+management
+Focuses on organizational changes and is not to be confused with the change management 
+process (risk avoidance in the context of changes in the technical operating environment)
+7. Portfolio management
+Service portfolio management 
+Business relationship 
+management
+Applies to service portfolios as well as project and customer portfolios
+8. Project management
+Transition planning and support Itil 4 expands the PM's focus from pure service transition to all projects in the organization
+9. Relationship management
+Business relationship 
+management
+ITIL 4 expands the focus from customers to all existing stakeholders
+10. Risk management
+No separate process in V3, but is addressed in various processes and a "coordinated 
+implementation of risk assessments"
+is required
+11. Financial management service Financial management for IT 
+services
+12. Strategy management
+Strategy management for IT 
+services
+13. Supplier management
+supplier management
+Expansion to include multi-sourcing and service integration. The term "underpinning contract" has 
+been deleted
+14. Workforce and talent 
+management
+only references to competence development, education and training
+
+============================================================
+PAGE 44
+============================================================
+Service Management Practices
+ITIL 4 Practices
+ITIL V3 Processes
+comments
+1. Availability management
+Availability management
+2. Business analysis
+Techniques for analyzing systems, processes and architectures are described. Some of the 
+techniques are applied in ITIL V3 processes
+3. Capacity and performance 
+management
+Capacity management, 
+demand management
+4. Change control
+Change management, 
+change evaluation
+5. Incident management
+incident management
+6. IT asset management
+Service asset & configuration management includes activities + concepts related to this, but 
+"Fixed Asset Management" is not described in detail
+7. Monitoring and event 
+management
+event management
+8. Problem management
+problem management
+9. Release management
+Release and deployment 
+management
+ITIL 4 includes some additional recommendations for Agile and DevOps environments
+10. Service catalog management
+Service catalogue management
+11. Service configuration 
+management
+Service asset and configuration 
+management
+12. Service continuity management IT service continuity 
+management
+13. Service design
+Design coordination 
+service level management
+Largely corresponds to the "Service Design" phase in ITIL V3, although in ITIL 4 this is divided 
+into several practices.
+14. Service desk
+Incident management 
+Request fulfillment
+Service desk represents a function in the processes mentioned in ITIL V3
+15. Service level management
+service level management
+16. Service request management
+Request fulfillment
+17. Service validation and testing
+Service validation and testing
+
+============================================================
+PAGE 45
+============================================================
+Technical Management Practices
+ITIL 4 Practices
+ITIL V3 Processes
+comments
+1. Deployment management
+Release and deployment 
+management
+ITIL 4 includes some additional recommendations for multi-supplier environments
+2. Infrastructure and platform 
+management
+The focus is on cloud services and cloud computing
+3. Software development and 
+management
+Entspricht weitestgehend der Funktion "Application Management" in ITIL V3 in der Phase 
+Service Operations
+Kahoot 6k
+
+============================================================
+PAGE 50
+============================================================
+( source : ITIL Service Strategy (2013))
+Effect of utiliy
+Effect of warranty
+Increase of Performance
+Reduction of 
+Performance Variation
+
+============================================================
+PAGE 51
+============================================================
+Capabilities
+resources
+management
+financial resources
+organization
+infrastructure
+processes
+applications
+To know
+information
+people (experience, skills, 
+relationships)
+people (number of 
+employees)
+
+============================================================
+PAGE 58
+============================================================
+Kahoot 1-2k
+Example of the application of service strategy: IT needs analysis of the data center (see Moodle) 
+Kahoot 1-2k
+
+============================================================
+PAGE 80
+============================================================
+𝑨𝒗𝒂𝒊𝒍𝒂𝒃𝒊𝒍𝒊𝒕𝒚% = 𝑨𝒈𝒓𝒆𝒆𝒅 𝑺𝒆𝒓𝒗𝒊𝒄𝒆 𝑻𝒊𝒎𝒆𝑨𝑺𝑻−𝒅𝒐𝒘𝒏𝒕𝒊𝒎𝒆
+𝑨𝑺𝑻
+ ∗𝟏𝟎𝟎
+𝑨𝒗𝒂𝒊𝒍𝒂𝒃𝒊𝒍𝒊𝒕𝒚% =
+𝟏𝟔𝟖 −𝟎,𝟓
+𝟏𝟔𝟖
+ ∗𝟏𝟎𝟎= 𝟗𝟗, 𝟕𝟎𝟐𝟒%
+𝑨𝒗𝒂𝒊𝒍𝒂𝒃𝒊𝒍𝒊𝒕𝒚% =
+𝟒𝟓 −𝟎,𝟓
+𝟒𝟓
+ ∗𝟏𝟎𝟎= 𝟗𝟖, 𝟖𝟖𝟖𝟗%
+
+============================================================
+PAGE 82
+============================================================
+𝑀𝑎𝑖𝑛𝑡𝑎𝑖𝑛𝑎𝑏𝑖𝑙𝑖𝑡𝑦𝑀𝑇𝑅𝑆 𝑖𝑛 ℎ=
+𝑇𝑜𝑡𝑎𝑙 𝑑𝑜𝑤𝑛𝑡𝑖𝑚𝑒 𝑖𝑛 ℎ𝑜𝑢𝑟𝑠
+𝑁𝑢𝑚𝑏𝑒𝑟 𝑜𝑓 𝑆𝑒𝑟𝑣𝑖𝑐𝑒 𝑏𝑟𝑒𝑎𝑘𝑠
+source: ITIL Service Design (2013)
+
+============================================================
+PAGE 84
+============================================================
+ISM support from top management.
+Contents:
+-
+use of IT assets
+-
+access control
+-
+password control
+-
+email and internet
+-
+antivirus protection
+-
+information and document 
+classification
+-
+remote access
+-
+supplier and provider access
+source : ITIL Service Design (2013)
+
+============================================================
+PAGE 89
+============================================================
+source : ITIL Service Design (2013)
+•
+Strategic Suppliers : Strategic partnership with the supplier, close 
+exchange and joint (further) development of new services. These 
+suppliers are usually difficult to replace. (e.g. suppliers of new 
+technologies that are critical to success)
+•
+Tactical Suppliers : Suppliers with whom significant business
+Relationships exist, but their services are not 
+of strategic importance. Close cooperation in 
+middle management (e.g. server HW 
+maintenance)
+•
+Operational Suppliers : Suppliers with 
+simple services or lower business impact 
+(e.g. PC or printer maintenance)
+•
+commodity Suppliers : easily 
+replaceable suppliers
+
+============================================================
+PAGE 126
+============================================================
+managed and stored in the CMS.
+Baselines are used to record the 
+configuration status at a specific 
+point in time.
+Certain CIs (e.g. SLAs or report 
+templates) are only stored in the 
+SKMS in the form of knowledge or 
+information.
+
+============================================================
+PAGE 128
+============================================================
+Knowledge is created by adding experience, 
+context and understanding to the information 
+analysis (e.g. the calls to routers are compared to 
+the total number of available routers and their 
+utilization in order to be able to evaluate the 
+relevance of the information)
+Wisdom then arises through a targeted decision 
+(e.g. replacing the router or changing the provider)
+
+============================================================
+PAGE 129
+============================================================
+Support for decisions
+Support for delivery of services
+Plans etc. It also integrates other 
+information systems (e.g. from availability , 
+capacity and supplier management). 
+Further information comes from the 
+integration of operational data from the 
+incident and problem management system.
+
+============================================================
+PAGE 150
+============================================================
+First call 
+response in 2 
+hours or less
+Effort during 
+business hours 
+only.
+First call 
+response in 4 
+hours or less
+Effort during 
+business hours 
+only.
+Moderate 
+business 
+impact:
+Customer’s 
+business has 
+moderate loss or 
+degradation of 
+services, but 
+work can 
+reasonably 
+continue.
+Minimum 
+business 
+impact: 
+Customer’s 
+business is 
+functioning with 
+minor or no 
+impediments of 
+services.
+Allocation of 
+appropriate 
+resources to 
+sustain business 
+hours effort.
+Accurate contact 
+information on 
+case owner 
+responsive within 
+24 hours.
+B
+C
+Once 
+ever
+y 3
+days
+Daily
+Critical business 
+impact: 
+Customer has 
+complete loss of 
+a core (mission-
+critical) business 
+process and 
+needs immediate 
+attention.
+First call 
+response in 1 
+hour or less
+ROSS dispatch 
+asap. Escalation 
+to Microsoft® 
+product teams. 
+Senior executive 
+notification.
+Significant 
+business 
+impact: 
+Customer’s 
+business has 
+significant loss or 
+degradation of 
+services. 
+Requires urgent 
+attention.
+First call 
+response in 1 
+hour or less
+ROSS (4-hour 
+trigger) 
+Senior executive 
+notification.
+Senior executive 
+notification. 
+Allocation of 
+appropriate 
+resources to 
+sustain 
+continuous effort 
+24 hours a day, 7 
+days a week.
+Allocation of 
+appropriate 
+resources to 
+sustain 
+continuous effort 
+24 hours a day, 7 
+days a week.  
+1
+A
+Hour
+ly
+Hour
+ly
+Customer’s 
+situation
+Expected
+Microsoft 
+Response
+Upd.
+Expected
+Customer 
+Response
+Sev.
+Customer’s 
+situation
+Expected
+Microsoft 
+Response
+Upd.
+Expected
+Customer 
+Response
+Sev.
+
+============================================================
+PAGE 154
+============================================================
+Support 
+Engineer
+Sr. Support 
+Engineer
+• Directly supports customers through telephone, email and chat services
+• Based in all main countries n EMEA
+• Highly trained and skilled with specific components or applications, but may not be 
+able to address multiple specialties in-depth
+Support 
+Escalation
+Engineers
+Sr. Support 
+Escalation
+Engineer
+• Primarily engages via escalated cases, collaborative sub-cases and mentoring 
+• The role requires a more in-depth, advanced skill set than the SE and TL roles, and 
+differs from EE roles by not requiring the use of product source code debugging skills
+• May participate directly in 2. Level support such as mentoring helping within critical 
+situation issues
+Escalation
+Engineers
+Sr. Escalation
+Engineer
+• Code-level knowledge of the products they support
+• Assist with bug fixes and critical design change requests (C-DCRs)
+• Interface directly with customers where appropriate
+• Works directly with product teams through RFCs, RFOs, RFHs and DCRs
+Principal
+Escalation
+Engineer
+• Extensive code-level knowledge of the products they support
+• Actively work with and mentor EEs
+• Interface directly with the product group to drive product improvements
+• Highest technical level in the organization
+• Asked to solve global issues within the businesses, products and product groups
+First Level
+Support
+Second Level
+Support
+Third Level
+Support
+Fourth Level
+Support
+
+============================================================
+PAGE 155
+============================================================
+1
+A
+CSS
+premier
+MCS
+Sales
+Dev
+PFE
+1
+Hour
+4
+Hours
+Services 
+Director
+Services 
+Director
+Services 
+Director
+Sales 
+GM
+Product 
+GM
+PFE 
+Duty 
+Mgr.
+1
+Hour
+8
+Hours
+Support & Services VPs
+Sales 
+VP
+Product 
+Group 
+VP
+4
+Hours
+COO /  CEO /
+Within
+60 
+minutes
+Within
+60 
+minutes
+Core Contacts 
+(TAM, PSM, Crisis Manager, SP/SE, TM Account Team)
+Time
+
+============================================================
+PAGE 160
+============================================================
+Problem 
+Identification
+Problem 
+Control
+Error Control
+1.
+Problem Identification Phase: 1) Trend analysis of incident records, 2) Input 
+from users, service desk, technical support teams, 3) Identified risks from major 
+incident Process , 4) Supplier/Partner Input, 5) Input by SW developers, test 
+teams and project teams
+2.
+Problem control phase: Analysis of problems and documentation of 
+workarounds and known errors: 
+High-priority problems are analyzed (technical + processes + information) in 
+order to identify causes and solve them. If problems cannot be solved in the 
+foreseeable future, workarounds to resolve the incident are documented . These 
+can also be retained in the long term if problem solutions are too expensive or 
+not feasible.
+3.
+Error control phase: The aim is to identify problems that have already been 
+analyzed and errors localized, for which a permanent solution is to be developed 
+and implemented. Known errors are regularly re-evaluated (customer impact, 
+cost and availability of the solution, quality of the workaround )

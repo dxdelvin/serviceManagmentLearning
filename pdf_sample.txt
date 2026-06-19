@@ -1,0 +1,43 @@
+pages: 192
+=== FITZ PAGE 1 len=45 ===
+PROF. DR. CLEMENS ESPE – AUGSBURG 17.03.2025
+
+=== FITZ PAGE 2 len=0 ===
+(empty)
+=== FITZ PAGE 3 len=4 ===
+→
+→
+
+=== FITZ PAGE 4 len=346 ===
+Axelos (2014)
+‘ITIL Lifecycle Suite´ (5 Bände), The Stationary Office, 2014
+Axelos (2019)
+‘ITIL Foundation ITIL 4 Edition´, Axelos, 2019
+PeopleCert (2019)
+‘ITIL Foundation. The Definite Guide for ITIL Foundation 
+Certification´, iCertify Training, 2019
+Axelos (2020)
+‘ITIL 4 Managing Professional Package´ (4 Bände), The 
+Stationary Office, 2020
+
+=== FITZ PAGE 5 len=0 ===
+(empty)
+=== PLUMBER PAGE 1 len=43 ===
+PROF. DR. CLEMENS ESPE –AUGSBURG 17.03.2025
+=== PLUMBER PAGE 2 len=0 ===
+(empty)
+=== PLUMBER PAGE 3 len=3 ===
+→
+→
+=== PLUMBER PAGE 4 len=343 ===
+Axelos (2014) ‘ITIL Lifecycle Suite´ (5 Bände), The Stationary Office, 2014
+Axelos (2019) ‘ITIL Foundation ITIL 4 Edition´, Axelos, 2019
+‘ITIL 4 Managing Professional Package´ (4 Bände), The
+Axelos (2020)
+Stationary Office, 2020
+‘ITIL Foundation. The Definite Guide for ITIL Foundation
+PeopleCert (2019)
+Certification´, iCertify Training, 2019
+=== PLUMBER PAGE 5 len=0 ===
+(empty)
+images on page 1: 4

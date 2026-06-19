@@ -1,0 +1,7 @@
+---
+pid: 0
+cwd: "c:\Users\dxdel\Extra Activities\iis-servicemanagment"
+command: "cd \"c:\\Users\\dxdel\\Extra Activities\\iis-servicemanagment\\quiz-app\" && python -m http.server 8765"
+started_at: 2026-06-19T07:44:07.524Z
+running_for_ms: 0        
+---

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Management Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page-frame">
+    <header class="topbar">
+      <button class="brand" id="brand-home" type="button">
+        <span class="brand-icon ico ico-brand" id="ico-brand"></span>
+        <span class="brand-text">Service Management Quiz</span>
+      </button>
+      <div class="topbar-score" id="topbar-score" hidden>
+        <span class="ico ico-star-sm" id="ico-hud-star"></span>
+        <span id="hud-stars">0</span>
+      </div>
+    </header>
+
+    <main id="app">
+      <!-- HOME -->
+      <section class="screen active" id="screen-home">
+        <div class="hero">
+          <div class="hero-art ico ico-hero" id="ico-hero"></div>
+          <h1>Service Management Quiz</h1>
+          <p class="hero-sub" id="hero-sub">549 questions · learn at your pace or take a short quiz</p>
+        </div>
+
+        <div class="home-score" id="home-score">
+          <span class="score-chip">
+            <span class="ico ico-star-sm" id="ico-stat-star"></span>
+            <strong id="stat-stars">0</strong> correct
+          </span>
+          <span class="score-chip muted">
+            <strong id="stat-done">0</strong> tried
+          </span>
+          <span class="score-chip wrong-chip" id="home-wrong-chip" hidden>
+            <span class="ico ico-inline" id="ico-stat-wrong"></span>
+            <strong id="stat-wrong">0</strong> to fix
+          </span>
+        </div>
+
+        <div class="topic-filter" id="topic-filter-home" hidden>
+          <span class="ico ico-inline" id="ico-topic-home"></span>
+          <div class="topic-filter-body">
+            <span class="topic-filter-label">Topic set</span>
+            <span class="topic-filter-name" id="topic-filter-home-text"></span>
+          </div>
+          <button class="topic-filter-change" id="btn-topic-change-home" type="button">Change</button>
+        </div>
+
+        <div class="mode-grid">
+          <button class="mode-card learn-mode" id="btn-learn" type="button">
+            <span class="mode-icon ico" id="ico-learn"></span>
+            <span class="mode-name">Learn</span>
+            <span class="mode-desc">One at a time</span>
+          </button>
+          <button class="mode-card exam-mode" id="btn-exam" type="button">
+            <span class="mode-icon ico" id="ico-quiz"></span>
+            <span class="mode-name">Quiz</span>
+            <span class="mode-desc">15 questions, scored at the end</span>
+          </button>
+        </div>
+
+        <button class="wrong-practice-card" id="btn-practice-wrong" type="button" disabled>
+          <span class="wrong-practice-icon ico" id="ico-practice-wrong"></span>
+          <span class="wrong-practice-body">
+            <span class="wrong-practice-name">Practice wrong questions</span>
+            <span class="wrong-practice-desc" id="practice-wrong-desc">Miss something? Practice it here</span>
+          </span>
+          <span class="wrong-practice-count" id="practice-wrong-count">0</span>
+        </button>
+
+        <div class="home-links">
+          <button class="link-btn" id="btn-topics" type="button">
+            <span class="ico ico-inline" id="ico-topics-link"></span>
+            Topics
+          </button>
+          <button class="link-btn" id="btn-wrong-list" type="button">
+            <span class="ico ico-inline" id="ico-wrong-link"></span>
+            Wrong questions
+          </button>
+          <button class="link-btn" id="btn-progress" type="button">
+            <span class="ico ico-inline" id="ico-progress-link"></span>
+            My progress
+          </button>
+        </div>
+      </section>
+
+      <!-- LEARN -->
+      <section class="screen" id="screen-learn">
+        <div class="screen-top">
+          <button class="btn-back" data-back type="button">
+            <span class="ico ico-back" id="ico-back-learn"></span>
+            Home
+          </button>
+          <span class="screen-label" id="learn-progress-text">1 / 549</span>
+        </div>
+
+        <div class="topic-filter topic-filter-compact" id="topic-filter-learn" hidden>
+          <span class="ico ico-inline" id="ico-topic-learn"></span>
+          <span class="topic-filter-name" id="topic-filter-learn-text"></span>
+        </div>
+
+        <div class="topic-filter topic-filter-compact wrong-mode-badge" id="learn-wrong-badge" hidden>
+          <span class="ico ico-inline" id="ico-learn-wrong"></span>
+          <span class="topic-filter-name" id="learn-wrong-badge-text"></span>
+        </div>
+
+        <article class="card" id="learn-card">
+          <p class="q-label" id="learn-qnum">Question 1</p>
+          <h2 class="q-text" id="learn-question"></h2>
+          <div class="options" id="learn-options"></div>
+
+          <div class="answer-box" id="learn-feedback" hidden>
+            <div class="answer-msg-row">
+              <span class="answer-icon ico" id="feedback-icon"></span>
+              <p class="answer-msg" id="feedback-header"></p>
+            </div>
+            <button class="btn-main" id="btn-learn-next" type="button">
+              Next
+              <span class="ico ico-btn" id="ico-next"></span>
+            </button>
+          </div>
+        </article>
+
+        <div class="learn-actions">
+          <button class="btn-small" id="btn-learn-skip" type="button">Skip</button>
+          <button class="btn-small" id="btn-learn-shuffle" type="button">
+            <span class="ico ico-inline" id="ico-shuffle"></span>
+            Shuffle
+          </button>
+        </div>
+      </section>
+
+      <!-- EXAM INTRO -->
+      <section class="screen" id="screen-exam-intro">
+        <div class="screen-top">
+          <button class="btn-back" data-back type="button">
+            <span class="ico ico-back" id="ico-back-exam"></span>
+            Home
+          </button>
+        </div>
+        <article class="card card-center">
+          <span class="big-icon ico" id="ico-exam-intro"></span>
+          <h2>Quiz time</h2>
+          <div class="topic-filter topic-filter-center" id="topic-filter-exam-intro" hidden>
+            <span class="ico ico-inline" id="ico-topic-exam-intro"></span>
+            <span class="topic-filter-name" id="topic-filter-exam-intro-text"></span>
+          </div>
+          <p class="card-text" id="exam-intro-text">15 random questions. Answers show up when you finish.</p>
+          <p class="card-text small" id="exam-intro-pass">Need 11 right to pass.</p>
+          <button class="btn-main btn-wide" id="btn-exam-start" type="button">Start quiz</button>
+        </article>
+      </section>
+
+      <!-- EXAM -->
+      <section class="screen" id="screen-exam">
+        <div class="screen-top">
+          <span class="screen-label" id="exam-progress">1 / 15</span>
+          <span class="screen-label timer-label">
+            <span class="ico ico-inline" id="ico-clock"></span>
+            <span id="exam-timer">0:00</span>
+          </span>
+        </div>
+
+        <div class="topic-filter topic-filter-compact" id="topic-filter-exam" hidden>
+          <span class="ico ico-inline" id="ico-topic-exam"></span>
+          <span class="topic-filter-name" id="topic-filter-exam-text"></span>
+        </div>
+
+        <article class="card">
+          <p class="q-label" id="exam-qnum">Question 1</p>
+          <h2 class="q-text" id="exam-question"></h2>
+          <div class="options" id="exam-options"></div>
+        </article>
+
+        <div class="exam-nav">
+          <button class="btn-small" id="btn-exam-prev" type="button" disabled>Back</button>
+          <button class="btn-main" id="btn-exam-next" type="button">Next</button>
+          <button class="btn-main" id="btn-exam-finish" type="button" hidden>Done</button>
+        </div>
+      </section>
+
+      <!-- RESULTS -->
+      <section class="screen" id="screen-exam-results">
+        <article class="card card-center results-card">
+          <span class="big-icon ico" id="results-icon"></span>
+          <h2 id="results-title">Nice job</h2>
+          <p class="score-line">
+            <strong id="results-score">0</strong> / <span id="results-total">15</span> correct
+          </p>
+          <p class="card-text" id="results-subtitle"></p>
+        </article>
+
+        <div class="results-list" id="results-review"></div>
+
+        <div class="results-actions">
+          <button class="btn-main" id="btn-results-practice-wrong" type="button" hidden>Practice wrong answers</button>
+          <button class="btn-main" id="btn-exam-retry" type="button">Try again</button>
+          <button class="btn-small" data-back type="button">Home</button>
+        </div>
+      </section>
+
+      <!-- PROGRESS -->
+      <section class="screen" id="screen-progress">
+        <div class="screen-top">
+          <button class="btn-back" data-back type="button">
+            <span class="ico ico-back" id="ico-back-progress"></span>
+            Home
+          </button>
+          <h2 class="inline-title">My progress</h2>
+        </div>
+
+        <article class="card profile-card">
+          <span class="profile-face ico" id="profile-avatar"></span>
+          <div>
+            <p class="profile-big">
+              <span id="profile-stars">0</span>
+              <span class="ico ico-star-sm profile-star"></span>
+            </p>
+            <p class="card-text" id="profile-done">0 questions practiced</p>
+          </div>
+        </article>
+
+        <h3 class="section-label">Stickers earned</h3>
+        <div class="stickers" id="badges-grid"></div>
+
+        <button class="btn-small btn-reset" id="btn-reset" type="button">Start over</button>
+      </section>
+
+      <!-- WRONG QUESTIONS -->
+      <section class="screen" id="screen-wrong">
+        <div class="screen-top">
+          <button class="btn-back" data-back type="button">
+            <span class="ico ico-back" id="ico-back-wrong"></span>
+            Home
+          </button>
+          <h2 class="inline-title">Wrong questions</h2>
+        </div>
+
+        <article class="card wrong-summary-card" id="wrong-summary" hidden>
+          <p class="wrong-summary-count" id="wrong-summary-count"></p>
+          <p class="card-text" id="wrong-summary-text"></p>
+          <button class="btn-main btn-wide" id="btn-wrong-practice-all" type="button">Practice all</button>
+        </article>
+
+        <div class="wrong-empty card card-center" id="wrong-empty" hidden>
+          <span class="big-icon ico" id="ico-wrong-empty"></span>
+          <h2>Nothing to fix!</h2>
+          <p class="card-text">Questions you miss will show up here so you can practice them.</p>
+        </div>
+
+        <div class="wrong-list" id="wrong-list"></div>
+      </section>
+
+      <!-- TOPICS -->
+      <section class="screen" id="screen-topics">
+        <div class="screen-top">
+          <button class="btn-back" data-back type="button">
+            <span class="ico ico-back" id="ico-back-topics"></span>
+            Home
+          </button>
+          <h2 class="inline-title">Topics</h2>
+        </div>
+        <div class="topic-list" id="topic-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
