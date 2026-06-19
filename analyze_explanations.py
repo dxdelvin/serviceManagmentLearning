@@ -1,7 +1,7 @@
 import json
 from collections import Counter
 
-PATH = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\quiz-app\data\questions.json"
+PATH = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\data\questions.json"
 q = json.load(open(PATH, encoding="utf-8"))
 
 fallback = sum(1 for x in q if "In ITIL terms:" in x.get("explanation", ""))

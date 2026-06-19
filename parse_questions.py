@@ -3,7 +3,7 @@ import json
 import fitz
 
 PDF = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\ITIL 4 Übungsfragen aktuell.pdf"
-OUT = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\quiz-app\data\questions.json"
+OUT = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\data\questions.json"
 
 doc = fitz.open(PDF)
 full_text = "\n".join(page.get_text() for page in doc)

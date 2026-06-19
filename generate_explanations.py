@@ -2,7 +2,7 @@
 import json
 import re
 
-PATH = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\quiz-app\data\questions.json"
+PATH = r"c:\Users\dxdel\Extra Activities\iis-servicemanagment\data\questions.json"
 
 PRACTICE_PATTERNS = [
     (r"service catalogue|service catalog", "Service catalogue management",
