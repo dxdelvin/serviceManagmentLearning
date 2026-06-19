@@ -367,7 +367,13 @@ function renderLearnQuestion() {
     ? `Question ${q.id} · reviewing again`
     : `Question ${q.id}`;
   $('#learn-question').textContent = q.question;
-  $('#learn-feedback').hidden = true;
+  const feedback = $('#learn-feedback');
+  feedback.hidden = true;
+  feedback.classList.remove('correct-win', 'correct-win-big');
+  const sub = $('#feedback-sub');
+  if (sub) sub.hidden = true;
+  const sparkles = $('#learn-win-sparkles');
+  if (sparkles) sparkles.innerHTML = '';
 
   const container = $('#learn-options');
   container.innerHTML = '';
@@ -409,19 +415,39 @@ function handleLearnAnswer(q, selected) {
     }
   }
 
-  setIcon($('#feedback-icon'), correct ? 'check' : 'cross');
+  const feedbackEl = $('#learn-feedback');
+  const iconEl = $('#feedback-icon');
+  setIcon(iconEl, correct ? 'check' : 'cross');
   const header = $('#feedback-header');
   header.className = `answer-msg ${correct ? 'correct' : 'wrong'}`;
-  header.textContent = correct
-    ? 'You got it!'
-    : `Not this time — it's ${q.correct}`;
 
-  $('#learn-feedback').hidden = false;
+  const selectedBtn = [...buttons].find((btn, i) => q.options[i].id === selected);
 
-  if (!correct) $('#learn-card').classList.add('shake');
-  setTimeout(() => $('#learn-card').classList.remove('shake'), 400);
+  if (correct) {
+    header.textContent = getWinMessage(progress.streak, learnMode);
+    const subEl = $('#feedback-sub');
+    if (subEl) {
+      subEl.textContent = getWinSubline(progress.streak, learnMode);
+      subEl.hidden = false;
+    }
+    celebrateCorrect({
+      streak: progress.streak,
+      learnMode,
+      originEl: selectedBtn,
+      cardEl: $('#learn-card'),
+      feedbackEl,
+      iconEl,
+    });
+  } else {
+    header.textContent = `Not this time — it's ${q.correct}`;
+    const subEl = $('#feedback-sub');
+    if (subEl) subEl.hidden = true;
+    feedbackEl.classList.remove('correct-win', 'correct-win-big');
+    $('#learn-card').classList.add('shake');
+    setTimeout(() => $('#learn-card').classList.remove('shake'), 400);
+  }
 
-  if (correct) fireConfetti();
+  feedbackEl.hidden = false;
 
   checkBadges(progress).forEach(b => showToast(`New sticker: ${b.name}!`));
 
@@ -448,8 +474,8 @@ function handleLearnAnswer(q, selected) {
   }
 
   if (learnMode === 'wrong' && correct && !learnQueue.length) {
-    showToast('All wrong questions cleared!');
-    fireConfetti();
+    showToast('All wrong questions cleared!', 'win');
+    fireConfetti('mega');
   }
 }
 

@@ -127,6 +127,7 @@
         </div>
 
         <article class="card" id="learn-card">
+          <div class="win-sparkles" id="learn-win-sparkles" aria-hidden="true"></div>
           <p class="q-label" id="learn-qnum">Question 1</p>
           <h2 class="q-text" id="learn-question"></h2>
           <div class="options" id="learn-options"></div>
@@ -134,7 +135,10 @@
           <div class="answer-box" id="learn-feedback" hidden>
             <div class="answer-msg-row">
               <span class="answer-icon ico" id="feedback-icon"></span>
-              <p class="answer-msg" id="feedback-header"></p>
+              <div class="answer-msg-body">
+                <p class="answer-msg" id="feedback-header"></p>
+                <p class="feedback-sub" id="feedback-sub" hidden></p>
+              </div>
             </div>
             <button class="btn-main" id="btn-learn-next" type="button">
               Next
