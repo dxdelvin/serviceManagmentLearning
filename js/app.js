@@ -57,18 +57,28 @@ function initStaticIcons() {
   }
 }
 
+function assetUrl(path) {
+  const v = window.__ASSET_V || Date.now();
+  const sep = path.includes('?') ? '&' : '?';
+  return `${path}${sep}v=${encodeURIComponent(v)}`;
+}
+
+async function fetchFresh(url) {
+  return fetch(assetUrl(url), { cache: 'no-store' });
+}
+
 async function init() {
   initStaticIcons();
 
   try {
-    const res = await fetch('data/questions.json');
+    const res = await fetchFresh('data/questions.json');
     questions = await res.json();
     questions.forEach(q => {
       q.options.forEach(o => {
         o.text = o.text.replace(/diƯicult/gi, 'difficult').replace(/oƯ/g, 'off').replace(/eƯ/g, 'eff');
       });
     });
-    const setsRes = await fetch('data/exam-sets.json');
+    const setsRes = await fetchFresh('data/exam-sets.json');
     examSets = await setsRes.json();
   } catch (e) {
     document.getElementById('app').innerHTML = '<p style="text-align:center;padding:3rem">Could not load questions. Please use a local server.</p>';
