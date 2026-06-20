@@ -1,0 +1,11 @@
+Wrote 7 sets from AI classifications
+Assigned: 188 / 549 questions
+Unassigned (not one of 7 practices): 361
+
+  Continual Improvement: 34 questions
+  Change Management: 30 questions
+  Incident Management: 29 questions
+  Problem Management: 28 questions
+  Service Request Management: 16 questions
+  Service Desk: 13 questions
+  Service Level Management: 38 questions

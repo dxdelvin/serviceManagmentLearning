@@ -164,16 +164,18 @@ function updateExamIntroDisplay() {
   const topicBadge = $('#topic-filter-exam-intro');
 
   if (activeExamSet) {
+    const setCount = activeExamSet.questionIds.length;
+    const passAt = Math.ceil(setCount * 0.65);
     if (titleEl) titleEl.textContent = activeExamSet.title;
     if (badgeEl) {
       badgeEl.hidden = false;
-      badgeEl.textContent = `${activeExamSet.label} · ${activeExamSet.practice}`;
+      badgeEl.textContent = `${activeExamSet.practice} · ${setCount} questions`;
     }
     if (topicBadge) topicBadge.hidden = true;
     if (examIntro) {
-      examIntro.textContent = '15 curated questions. See each answer right after you pick — score at the end.';
+      examIntro.textContent = `${setCount} questions on this practice. See each answer right after you pick — score at the end.`;
     }
-    if (examPass) examPass.textContent = 'Need 10 right to pass.';
+    if (examPass) examPass.textContent = `Need ${passAt} right to pass.`;
     return;
   }
 
@@ -656,7 +658,7 @@ function renderExamSets() {
       </span>
       <span class="exam-set-item-meta">
         ${stat.passed ? '<span class="exam-set-item-passed">Passed</span>' : ''}
-        <span class="exam-set-item-count">15 Q</span>
+        <span class="exam-set-item-count">${examSet.questionIds.length} Q</span>
       </span>
     `;
     item.onclick = () => openExamSetIntro(examSet);
