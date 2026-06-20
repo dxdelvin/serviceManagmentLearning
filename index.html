@@ -85,6 +85,17 @@
           <span class="wrong-practice-count" id="practice-wrong-count">0</span>
         </button>
 
+        <article class="card exam-sets-home" id="exam-sets-home">
+          <div class="exam-sets-home-head">
+            <span class="ico ico-inline" id="ico-exam-sets-home"></span>
+            <div>
+              <h3 class="exam-sets-home-title">Exam Mode Sets</h3>
+              <p class="exam-sets-home-desc">7 practice exams — one per core ITIL service management practice</p>
+            </div>
+          </div>
+          <button class="btn-main btn-wide" id="btn-exam-sets" type="button">Browse exam sets</button>
+        </article>
+
         <div class="home-links">
           <button class="link-btn" id="btn-topics" type="button">
             <span class="ico ico-inline" id="ico-topics-link"></span>
@@ -166,7 +177,8 @@
         </div>
         <article class="card card-center">
           <span class="big-icon ico" id="ico-exam-intro"></span>
-          <h2>Quiz time</h2>
+          <h2 id="exam-intro-title">Quiz time</h2>
+          <p class="exam-set-badge" id="exam-set-badge" hidden></p>
           <div class="topic-filter topic-filter-center" id="topic-filter-exam-intro" hidden>
             <span class="ico ico-inline" id="ico-topic-exam-intro"></span>
             <span class="topic-filter-name" id="topic-filter-exam-intro-text"></span>
@@ -192,13 +204,27 @@
           <span class="topic-filter-name" id="topic-filter-exam-text"></span>
         </div>
 
-        <article class="card">
+        <article class="card" id="exam-card">
           <p class="q-label" id="exam-qnum">Question 1</p>
           <h2 class="q-text" id="exam-question"></h2>
           <div class="options" id="exam-options"></div>
+
+          <div class="answer-box" id="exam-feedback" hidden>
+            <div class="answer-msg-row">
+              <span class="answer-icon ico" id="exam-feedback-icon"></span>
+              <div class="answer-msg-body">
+                <p class="answer-msg" id="exam-feedback-header"></p>
+                <div class="exam-explanation" id="exam-explanation" hidden></div>
+              </div>
+            </div>
+            <button class="btn-main" id="btn-exam-set-next" type="button" hidden>
+              Next
+              <span class="ico ico-btn" id="ico-exam-set-next"></span>
+            </button>
+          </div>
         </article>
 
-        <div class="exam-nav">
+        <div class="exam-nav" id="exam-nav">
           <button class="btn-small" id="btn-exam-prev" type="button" disabled>Back</button>
           <button class="btn-main" id="btn-exam-next" type="button">Next</button>
           <button class="btn-main" id="btn-exam-finish" type="button" hidden>Done</button>
@@ -218,9 +244,10 @@
 
         <div class="results-list" id="results-review"></div>
 
-        <div class="results-actions">
+        <div class="results-actions" id="results-actions">
           <button class="btn-main" id="btn-results-practice-wrong" type="button" hidden>Practice wrong answers</button>
           <button class="btn-main" id="btn-exam-retry" type="button">Try again</button>
+          <button class="btn-small" id="btn-exam-set-back" type="button" hidden>Back to exam sets</button>
           <button class="btn-small" data-back type="button">Home</button>
         </div>
       </section>
@@ -275,6 +302,19 @@
         </div>
 
         <div class="wrong-list" id="wrong-list"></div>
+      </section>
+
+      <!-- EXAM SETS -->
+      <section class="screen" id="screen-exam-sets">
+        <div class="screen-top">
+          <button class="btn-back" data-back type="button">
+            <span class="ico ico-back" id="ico-back-exam-sets"></span>
+            Home
+          </button>
+          <h2 class="inline-title">Exam Mode Sets</h2>
+        </div>
+        <p class="screen-lead">One focused practice exam per ITIL practice — 15 unique questions each, no repeats across sets.</p>
+        <div class="exam-set-list" id="exam-set-list"></div>
       </section>
 
       <!-- TOPICS -->

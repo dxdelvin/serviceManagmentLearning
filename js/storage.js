@@ -17,6 +17,7 @@ const defaultProgress = () => ({
   topicFilter: null,
   wrongIds: [],
   wrongLearnIndex: 0,
+  examSetStats: {},
 });
 
 function loadProgress() {

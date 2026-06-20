@@ -1,4 +1,6 @@
 let questions = [];
+let examSets = [];
+let activeExamSet = null;
 let progress = loadProgress();
 let learnQueue = [];
 let learnPointer = 0;
@@ -6,6 +8,8 @@ let learnAnswered = false;
 let examQuestions = [];
 let examAnswers = {};
 let examIndex = 0;
+let examAnswered = false;
+let examSetFinishTimer = null;
 let examStartTime = null;
 let examTimerInterval = null;
 let learnMode = 'normal';
@@ -44,6 +48,9 @@ function initStaticIcons() {
     'ico-back-wrong': 'arrowLeft',
     'ico-wrong-empty': 'check',
     'ico-review-notice': 'badgeCheck',
+    'ico-exam-sets-home': 'quiz',
+    'ico-back-exam-sets': 'arrowLeft',
+    'ico-exam-set-next': 'arrowRight',
   };
   for (const [id, name] of Object.entries(map)) {
     setIcon(document.getElementById(id), name);
@@ -61,6 +68,8 @@ async function init() {
         o.text = o.text.replace(/diƯicult/gi, 'difficult').replace(/oƯ/g, 'off').replace(/eƯ/g, 'eff');
       });
     });
+    const setsRes = await fetch('data/exam-sets.json');
+    examSets = await setsRes.json();
   } catch (e) {
     document.getElementById('app').innerHTML = '<p style="text-align:center;padding:3rem">Could not load questions. Please use a local server.</p>';
     return;
@@ -124,6 +133,14 @@ function updateTopicDisplay() {
   badges.forEach(([id, showLabel]) => {
     const el = $(`#topic-filter-${id}`);
     if (!el) return;
+
+    if (activeExamSet && (id === 'exam-intro' || id === 'exam')) {
+      el.hidden = false;
+      const textEl = $(`#topic-filter-${id}-text`);
+      if (textEl) textEl.textContent = `${activeExamSet.label} · ${activeExamSet.practice}`;
+      return;
+    }
+
     el.hidden = !filter;
     if (!filter) return;
 
@@ -134,7 +151,36 @@ function updateTopicDisplay() {
       : badgeText;
   });
 
+  updateExamIntroDisplay();
+}
+
+function updateExamIntroDisplay() {
+  const filter = progress.topicFilter;
+  const examCount = getExamPoolSize();
+  const titleEl = $('#exam-intro-title');
+  const badgeEl = $('#exam-set-badge');
   const examIntro = $('#exam-intro-text');
+  const examPass = $('#exam-intro-pass');
+  const topicBadge = $('#topic-filter-exam-intro');
+
+  if (activeExamSet) {
+    if (titleEl) titleEl.textContent = activeExamSet.title;
+    if (badgeEl) {
+      badgeEl.hidden = false;
+      badgeEl.textContent = `${activeExamSet.label} · ${activeExamSet.practice}`;
+    }
+    if (topicBadge) topicBadge.hidden = true;
+    if (examIntro) {
+      examIntro.textContent = '15 curated questions. See each answer right after you pick — score at the end.';
+    }
+    if (examPass) examPass.textContent = 'Need 10 right to pass.';
+    return;
+  }
+
+  if (titleEl) titleEl.textContent = 'Quiz time';
+  if (badgeEl) badgeEl.hidden = true;
+  if (topicBadge) topicBadge.hidden = !filter;
+
   if (examIntro) {
     if (filter) {
       examIntro.textContent = examCount < 15
@@ -145,7 +191,6 @@ function updateTopicDisplay() {
     }
   }
 
-  const examPass = $('#exam-intro-pass');
   if (examPass) {
     examPass.textContent = !examCount
       ? 'No questions in this topic.'
@@ -236,7 +281,12 @@ function bindEvents() {
   $('#btn-practice-wrong').onclick = () => startPracticeWrong();
   $('#btn-wrong-list').onclick = () => { renderWrongList(); showScreen('screen-wrong'); };
   $('#btn-wrong-practice-all').onclick = () => startPracticeWrong();
-  $('#btn-exam').onclick = () => showScreen('screen-exam-intro');
+  $('#btn-exam').onclick = () => {
+    activeExamSet = null;
+    updateExamIntroDisplay();
+    showScreen('screen-exam-intro');
+  };
+  $('#btn-exam-sets').onclick = () => { renderExamSets(); showScreen('screen-exam-sets'); };
   $('#btn-exam-start').onclick = startExam;
   $('#btn-progress').onclick = () => { renderProgress(); showScreen('screen-progress'); };
   $('#btn-topics').onclick = () => { renderTopics(); showScreen('screen-topics'); };
@@ -250,7 +300,16 @@ function bindEvents() {
   $('#btn-exam-prev').onclick = () => navigateExam(-1);
   $('#btn-exam-next').onclick = () => navigateExam(1);
   $('#btn-exam-finish').onclick = finishExam;
-  $('#btn-exam-retry').onclick = () => showScreen('screen-exam-intro');
+  $('#btn-exam-set-next').onclick = () => {
+    if (examSetFinishTimer) clearTimeout(examSetFinishTimer);
+    examIndex++;
+    renderExamQuestion();
+  };
+  $('#btn-exam-set-back').onclick = () => { renderExamSets(); showScreen('screen-exam-sets'); };
+  $('#btn-exam-retry').onclick = () => {
+    if (activeExamSet) updateExamIntroDisplay();
+    showScreen('screen-exam-intro');
+  };
   $('#btn-results-practice-wrong').onclick = () => startPracticeWrong();
   $('#btn-reset').onclick = resetProgress;
 
@@ -260,6 +319,10 @@ function bindEvents() {
 }
 
 function showScreen(id) {
+  if (id !== 'screen-exam' && id !== 'screen-exam-results' && examSetFinishTimer) {
+    clearTimeout(examSetFinishTimer);
+    examSetFinishTimer = null;
+  }
   $$('.screen').forEach(s => s.classList.remove('active'));
   $(`#${id}`).classList.add('active');
   $('#topbar-hud').hidden = id === 'screen-home';
@@ -540,19 +603,94 @@ function shuffleLearn() {
   renderLearnQuestion();
 }
 
+/* ─── EXAM SETS ─── */
+const EXAM_PRACTICE_ORDER = [
+  'Continual Improvement',
+  'Change Management',
+  'Incident Management',
+  'Problem Management',
+  'Service Request Management',
+  'Service Desk',
+  'Service Level Management',
+];
+
+function getExamSetRecord(setId) {
+  if (!progress.examSetStats) progress.examSetStats = {};
+  if (!progress.examSetStats[setId]) {
+    progress.examSetStats[setId] = { taken: 0, passed: 0, best: 0 };
+  }
+  return progress.examSetStats[setId];
+}
+
+function recordExamSetResult(setId, score, total) {
+  const stat = getExamSetRecord(setId);
+  stat.taken++;
+  if (score > stat.best) stat.best = score;
+  if (score >= Math.ceil(total * 0.65)) stat.passed++;
+  saveProgress(progress);
+}
+
+function openExamSetIntro(examSet) {
+  activeExamSet = examSet;
+  updateExamIntroDisplay();
+  showScreen('screen-exam-intro');
+}
+
+function renderExamSets() {
+  const list = $('#exam-set-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const ordered = EXAM_PRACTICE_ORDER
+    .map(practice => examSets.find(s => s.practice === practice))
+    .filter(Boolean);
+
+  ordered.forEach(examSet => {
+    const stat = getExamSetRecord(examSet.id);
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'exam-set-item';
+    item.innerHTML = `
+      <span class="exam-set-item-body">
+        <span class="exam-set-item-title">${examSet.title}</span>
+      </span>
+      <span class="exam-set-item-meta">
+        ${stat.passed ? '<span class="exam-set-item-passed">Passed</span>' : ''}
+        <span class="exam-set-item-count">15 Q</span>
+      </span>
+    `;
+    item.onclick = () => openExamSetIntro(examSet);
+    list.appendChild(item);
+  });
+}
+
 /* ─── EXAM ─── */
 function startExam() {
-  const pool = getFilteredQuestions();
-  const examCount = Math.min(15, pool.length);
-  if (!examCount) {
-    showToast(progress.topicFilter
-      ? `No questions in "${progress.topicFilter}"`
-      : 'No questions available');
-    return;
+  if (activeExamSet) {
+    const pool = activeExamSet.questionIds
+      .map(id => questions.find(q => q.id === id))
+      .filter(Boolean);
+    if (!pool.length) {
+      showToast('Could not load this exam set');
+      return;
+    }
+    examQuestions = pool;
+  } else {
+    const pool = getFilteredQuestions();
+    const examCount = Math.min(15, pool.length);
+    if (!examCount) {
+      showToast(progress.topicFilter
+        ? `No questions in "${progress.topicFilter}"`
+        : 'No questions available');
+      return;
+    }
+    examQuestions = pickExamQuestions(pool, examCount);
   }
-  examQuestions = pickExamQuestions(pool, examCount);
   examAnswers = {};
   examIndex = 0;
+  examAnswered = false;
+  if (examSetFinishTimer) clearTimeout(examSetFinishTimer);
+  examSetFinishTimer = null;
   examStartTime = Date.now();
   if (examTimerInterval) clearInterval(examTimerInterval);
   examTimerInterval = setInterval(updateExamTimer, 1000);
@@ -567,31 +705,114 @@ function updateExamTimer() {
   $('#exam-timer').textContent = `${m}:${String(s).padStart(2, '0')}`;
 }
 
+function isExamSetMode() {
+  return !!activeExamSet;
+}
+
 function renderExamQuestion() {
   const q = examQuestions[examIndex];
+  const isSetMode = isExamSetMode();
+  const selected = examAnswers[q.id];
+  examAnswered = isSetMode && !!selected;
+
   $('#exam-progress').textContent = `${examIndex + 1} / ${examQuestions.length}`;
   $('#exam-qnum').textContent = `Question ${q.id}`;
   $('#exam-question').textContent = q.question;
 
+  const feedback = $('#exam-feedback');
+  const setNextBtn = $('#btn-exam-set-next');
+  const examNav = $('#exam-nav');
+  if (feedback) feedback.hidden = !examAnswered;
+  if (setNextBtn) setNextBtn.hidden = true;
+  if (examNav) examNav.hidden = isSetMode;
+
   const container = $('#exam-options');
   container.innerHTML = '';
-  const selected = examAnswers[q.id];
   q.options.forEach(opt => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'option-btn' + (selected === opt.id ? ' selected' : '');
+    let cls = 'option-btn';
+    if (isSetMode && examAnswered) {
+      if (opt.id === q.correct) cls += ' correct';
+      else if (opt.id === selected && selected !== q.correct) cls += ' wrong';
+    } else if (selected === opt.id) {
+      cls += ' selected';
+    }
+    btn.className = cls;
+    btn.disabled = isSetMode && examAnswered;
     btn.innerHTML = `<span class="option-letter">${opt.id}</span><span>${opt.text}</span>`;
     btn.onclick = () => {
-      examAnswers[q.id] = opt.id;
-      renderExamQuestion();
+      if (isSetMode) handleExamSetAnswer(q, opt.id);
+      else {
+        examAnswers[q.id] = opt.id;
+        renderExamQuestion();
+      }
     };
     container.appendChild(btn);
   });
 
-  $('#btn-exam-prev').disabled = examIndex === 0;
+  if (isSetMode && examAnswered) {
+    showExamSetFeedback(q, selected);
+    const isLast = examIndex === examQuestions.length - 1;
+    if (!isLast && setNextBtn) setNextBtn.hidden = false;
+  } else if (feedback) {
+    const expl = $('#exam-explanation');
+    if (expl) expl.hidden = true;
+  }
+
+  if (!isSetMode) {
+    $('#btn-exam-prev').disabled = examIndex === 0;
+    const isLast = examIndex === examQuestions.length - 1;
+    $('#btn-exam-next').hidden = isLast;
+    $('#btn-exam-finish').hidden = !isLast;
+  }
+}
+
+function showExamSetFeedback(q, selected) {
+  const correct = selected === q.correct;
+  const correctOpt = q.options.find(o => o.id === q.correct);
+  const feedback = $('#exam-feedback');
+  const iconEl = $('#exam-feedback-icon');
+  const header = $('#exam-feedback-header');
+  const explEl = $('#exam-explanation');
+
+  setIcon(iconEl, correct ? 'check' : 'cross');
+  header.className = `answer-msg ${correct ? 'correct' : 'wrong'}`;
+  header.textContent = correct
+    ? `Correct — ${q.correct}) ${correctOpt.text}`
+    : `Answer: ${q.correct}) ${correctOpt.text}`;
+
+  if (explEl) {
+    if (q.explanation) {
+      explEl.innerHTML = q.explanation;
+      explEl.hidden = false;
+    } else {
+      explEl.innerHTML = '';
+      explEl.hidden = true;
+    }
+  }
+
+  if (feedback) feedback.hidden = false;
+
+  if (!correct) {
+    $('#exam-card')?.classList.add('shake');
+    setTimeout(() => $('#exam-card')?.classList.remove('shake'), 400);
+  }
+}
+
+function handleExamSetAnswer(q, selected) {
+  if (examAnswered) return;
+  examAnswered = true;
+  examAnswers[q.id] = selected;
+  const correct = selected === q.correct;
+  recordAnswer(progress, q.id, correct, q.topic);
+
+  renderExamQuestion();
+
   const isLast = examIndex === examQuestions.length - 1;
-  $('#btn-exam-next').hidden = isLast;
-  $('#btn-exam-finish').hidden = !isLast;
+  if (isLast) {
+    examSetFinishTimer = setTimeout(() => finishExam(), 1400);
+  }
 }
 
 function navigateExam(dir) {
@@ -600,8 +821,14 @@ function navigateExam(dir) {
 }
 
 function finishExam() {
+  if (examSetFinishTimer) {
+    clearTimeout(examSetFinishTimer);
+    examSetFinishTimer = null;
+  }
+
+  const isSetMode = isExamSetMode();
   const unanswered = examQuestions.filter(q => !examAnswers[q.id]);
-  if (unanswered.length && !confirm(`You skipped ${unanswered.length}. Finish anyway?`)) return;
+  if (!isSetMode && unanswered.length && !confirm(`You skipped ${unanswered.length}. Finish anyway?`)) return;
 
   clearInterval(examTimerInterval);
   let score = 0;
@@ -612,12 +839,13 @@ function finishExam() {
     const correct = userAns === q.correct;
     if (correct) score++;
     review.push({ q, userAns, correct });
-    recordAnswer(progress, q.id, correct, q.topic);
+    if (!isSetMode) recordAnswer(progress, q.id, correct, q.topic);
   });
 
   progress.examsTaken++;
   const result = gradeExam(score, examQuestions.length);
   if (result.pass) progress.examsPassed++;
+  if (activeExamSet) recordExamSetResult(activeExamSet.id, score, examQuestions.length);
   if (score === examQuestions.length && !progress.badges.includes('exam_perfect')) {
     progress.badges.push('exam_perfect');
   }
@@ -633,50 +861,66 @@ function finishExam() {
   $('#results-score').textContent = score;
   $('#results-total').textContent = examQuestions.length;
   const passScore = Math.ceil(examQuestions.length * 0.65);
-  $('#results-subtitle').textContent = result.pass
-    ? `You passed! Finished in ${m}m ${s}s.`
-    : `Keep practicing — you need ${passScore} to pass.`;
+  if (isSetMode) {
+    $('#results-subtitle').textContent = result.pass
+      ? `Passed — ${score} out of ${examQuestions.length}`
+      : `${score} out of ${examQuestions.length} — need ${passScore} to pass`;
+  } else {
+    $('#results-subtitle').textContent = result.pass
+      ? `You passed! Finished in ${m}m ${s}s.`
+      : `Keep practicing — you need ${passScore} to pass.`;
+  }
 
   const reviewEl = $('#results-review');
   reviewEl.innerHTML = '';
+  reviewEl.hidden = isSetMode;
 
   const wrongItems = review.filter(r => !r.correct);
-  const rightItems = review.filter(r => r.correct);
 
-  function appendReviewItem({ q, userAns, correct }) {
-    const item = document.createElement('div');
-    item.className = `review-item ${correct ? 'correct-item' : 'wrong-item'}`;
-    const correctOpt = q.options.find(o => o.id === q.correct);
-    item.innerHTML = `
-      <div class="review-q">${q.question}</div>
-      <div class="review-ans">
-        ${correct
-          ? `<span class="ico review-mark">${ICONS.check}</span><strong>${q.correct}) ${correctOpt.text}</strong>`
-          : `You picked ${userAns}. Answer: <strong>${q.correct}) ${correctOpt.text}</strong>`
-        }
-      </div>
-    `;
-    reviewEl.appendChild(item);
-  }
+  if (!isSetMode) {
+    const rightItems = review.filter(r => r.correct);
 
-  if (wrongItems.length) {
-    const label = document.createElement('p');
-    label.className = 'review-section-label wrong-label';
-    label.textContent = `Got wrong (${wrongItems.length})`;
-    reviewEl.appendChild(label);
-    wrongItems.forEach(appendReviewItem);
-  }
+    function appendReviewItem({ q, userAns, correct }) {
+      const item = document.createElement('div');
+      item.className = `review-item ${correct ? 'correct-item' : 'wrong-item'}`;
+      const correctOpt = q.options.find(o => o.id === q.correct);
+      item.innerHTML = `
+        <div class="review-q">${q.question}</div>
+        <div class="review-ans">
+          ${correct
+            ? `<span class="ico review-mark">${ICONS.check}</span><strong>${q.correct}) ${correctOpt.text}</strong>`
+            : `You picked ${userAns}. Answer: <strong>${q.correct}) ${correctOpt.text}</strong>`
+          }
+        </div>
+      `;
+      reviewEl.appendChild(item);
+    }
 
-  if (rightItems.length) {
-    const label = document.createElement('p');
-    label.className = 'review-section-label right-label';
-    label.textContent = `Got right (${rightItems.length})`;
-    reviewEl.appendChild(label);
-    rightItems.forEach(appendReviewItem);
+    if (wrongItems.length) {
+      const label = document.createElement('p');
+      label.className = 'review-section-label wrong-label';
+      label.textContent = `Got wrong (${wrongItems.length})`;
+      reviewEl.appendChild(label);
+      wrongItems.forEach(appendReviewItem);
+    }
+
+    if (rightItems.length) {
+      const label = document.createElement('p');
+      label.className = 'review-section-label right-label';
+      label.textContent = `Got right (${rightItems.length})`;
+      reviewEl.appendChild(label);
+      rightItems.forEach(appendReviewItem);
+    }
   }
 
   const practiceWrongBtn = $('#btn-results-practice-wrong');
-  if (practiceWrongBtn) practiceWrongBtn.hidden = wrongItems.length === 0;
+  if (practiceWrongBtn) practiceWrongBtn.hidden = isSetMode || wrongItems.length === 0;
+
+  const retryBtn = $('#btn-exam-retry');
+  if (retryBtn) retryBtn.textContent = isSetMode ? 'Try this set again' : 'Try again';
+
+  const setBackBtn = $('#btn-exam-set-back');
+  if (setBackBtn) setBackBtn.hidden = !isSetMode;
 
   if (result.pass) fireConfetti();
   checkBadges(progress).forEach(b => showToast(`New sticker: ${b.name}!`));
